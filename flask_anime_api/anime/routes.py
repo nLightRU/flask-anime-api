@@ -1,8 +1,8 @@
 from uuid import UUID
 from flask import Blueprint, request, jsonify, abort
 
-from flask_anime_api.anime_repository import AnimeRepository
-from flask_anime_api.schemas import AnimeCreateScheme
+from flask_anime_api.anime.repository import AnimeRepository
+from flask_anime_api.model.schemas import AnimeCreateScheme
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 

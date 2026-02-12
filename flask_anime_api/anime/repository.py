@@ -1,6 +1,6 @@
 from uuid import UUID, uuid4
 
-from flask_anime_api.schemas import AnimeDTO, AnimeCreateScheme
+from flask_anime_api.model.schemas import AnimeDTO, AnimeCreateScheme
 from flask_anime_api.data import anime_data
 
 class AnimeRepository:
