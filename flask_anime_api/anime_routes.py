@@ -1,14 +1,20 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 
+from .anime_repository import AnimeRepository
 from .data import anime_data
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 
 @anime_bp.get('/<int:anime_id>')
 def get_anime_by_id(anime_id):
-    for a in anime_data:
-        if a['id'] == anime_id:
-            return jsonify(a)
+    repo = AnimeRepository(repo_data=anime_data)
+    
+    a = repo.get_by_id(anime_id)
+    
+    if not a: 
+        abort(404)
+
+    return jsonify(a.model_dump())
 
         
 @anime_bp.get('/')

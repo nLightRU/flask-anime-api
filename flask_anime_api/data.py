@@ -1,7 +1,7 @@
 anime_data = [
-    {'id': 1, 'name': 'Cowboy Bebop'},
-    {'id': 2, 'name': 'Lain'},
-    {'id': 3, 'name': 'Eva'},
-    {'id': 4, 'name': 'Frieren'},
-    {'id': 5, 'name': 'Naruto'},
+    {'id': 1, 'title': 'Cowboy Bebop'},
+    {'id': 2, 'title': 'Lain'},
+    {'id': 3, 'title': 'Eva'},
+    {'id': 4, 'title': 'Frieren'},
+    {'id': 5, 'title': 'Naruto'},
 ]

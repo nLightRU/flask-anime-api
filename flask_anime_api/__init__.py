@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .anime import anime_bp
+from .anime_routes import anime_bp
 
 def create_app():
     app = Flask(__name__)
