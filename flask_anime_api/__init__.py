@@ -2,6 +2,8 @@ from flask import Flask
 
 from flask_anime_api.model.database import db
 from flask_anime_api.anime.routes import anime_bp
+from flask_anime_api.studio.routes import studio_bp
+
 
 from flask_anime_api.config import Config
 
@@ -13,5 +15,6 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(anime_bp)
+    app.register_blueprint(studio_bp)
 
     return app
