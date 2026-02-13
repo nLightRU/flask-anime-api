@@ -44,3 +44,23 @@ def post_studio():
     studio = repo.create(studio_data)
 
     return jsonify(studio.model_dump())
+
+
+@studio_bp.put('/<studio_id>')
+def put_studio(studio_id):
+    try:
+        json = request.get_json()
+        studio = StudioDTO(**json)
+    except ValidationError:
+        return 'Missing requred fields', 400
+        
+
+    repo = StudioRepository()
+    try:
+        studio = repo.update(studio_id, studio)
+    except ValueError:
+        return f'Studio with id {studio_id} not found', 404
+    # except:
+    #     return 'Internal server error', 500
+
+    return jsonify(studio.model_dump())
