@@ -1,6 +1,6 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from flask_anime_api.model.schemas import AnimeDTO, AnimeCreateScheme
 from flask_anime_api.model.database import db
@@ -14,7 +14,7 @@ class AnimeRepository:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
             
-            if not s:
+            if not a:
                 raise ValueError('no such id')
             
             return AnimeDTO(**a.to_dict())
@@ -30,5 +30,13 @@ class AnimeRepository:
             s.add(a)
             s.flush([a])
             return AnimeDTO(**a.to_dict())
-
     
+    def update(self, id_, data: AnimeCreateScheme) -> AnimeDTO:
+        with self.database.session_scope() as s:
+            a = s.get(Anime, id_)
+            if not a:
+                raise ValueError('no such id')
+            a.title = data.title
+            a.episodes = data.episodes
+            s.flush([a])
+            return AnimeDTO(**a.to_dict())

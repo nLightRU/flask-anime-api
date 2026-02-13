@@ -2,7 +2,7 @@ from uuid import UUID
 from flask import Blueprint, request, jsonify, abort
 
 from flask_anime_api.anime.repository import AnimeRepository
-from flask_anime_api.model.schemas import AnimeCreateScheme
+from flask_anime_api.model.schemas import AnimeCreateScheme, AnimeDTO
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 
@@ -10,10 +10,10 @@ anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 def get_anime_by_id(anime_id):
     repo = AnimeRepository()
     
-    a = repo.get_by_id(anime_id)
-    
-    if not a: 
-        abort(404)
+    try:
+        a = repo.get_by_id(anime_id)
+    except ValueError:
+        return f'Anime with id {anime_id} not found', 404
 
     return jsonify(a.model_dump())
 
@@ -41,5 +41,21 @@ def post_anime():
     if not new_anime:
         abort(500)
 
-    return jsonify({'anime': new_anime.model_dump()})
+    return jsonify(new_anime.model_dump())
 
+
+@anime_bp.put('/<anime_id>')
+def put_anime(anime_id):
+    try:
+        json = request.get_json()
+        new_data = AnimeCreateScheme(**json)
+    except:
+        return 'Missing requred fields', 400
+    
+    repo = AnimeRepository()
+    try:
+        a = repo.update(anime_id, new_data)
+    except ValueError:
+        return f'Anime with id {anime_id} not found', 404
+    
+    return jsonify(**a.model_dump())
