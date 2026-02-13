@@ -1,4 +1,5 @@
 from uuid import UUID
+from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 
@@ -53,3 +54,14 @@ class AnimeRepository:
             s.flush([a])
             s.refresh(a)
             return AnimeDTO(**a.to_dict())
+        
+    def delete(self, id_):
+        with self.database.session_scope() as s:
+            a = s.get(Anime, id_)
+            if not a:
+                raise ValueError
+            if a.is_deleted:
+                raise ValueError
+
+            a.is_deleted = True
+            a.deleted_at = datetime.now(timezone.utc)

@@ -59,3 +59,14 @@ def put_anime(anime_id):
         return f'Anime with id {anime_id} not found', 404
     
     return jsonify(**a.model_dump())
+
+
+@anime_bp.delete('/<anime_id>')
+def delete_anime(anime_id):
+    repo = AnimeRepository()
+    try:
+        repo.delete(anime_id)
+    except ValueError:
+        return f'Anime with id {anime_id} not found', 404
+    
+    return jsonify({'status': 'No Content'}), 204
