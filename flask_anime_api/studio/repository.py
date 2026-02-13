@@ -2,7 +2,7 @@ from sqlalchemy import select
 
 from flask_anime_api.model.database import db
 from flask_anime_api.model.studio import Studio
-from flask_anime_api.model.schemas import StudioDTO
+from flask_anime_api.model.schemas import StudioDTO, StudioCreateSchema
 
 class StudioRepository:
     def __init__(self):
@@ -22,4 +22,10 @@ class StudioRepository:
             return [
                 StudioDTO(**studio.to_dict()) for studio in studios
             ]
-        
+    
+    def create(self, studio_data: StudioCreateSchema) -> StudioDTO:
+        with self.database.session_scope() as s:
+            studio = Studio(**studio_data.model_dump())
+            s.add(studio)
+            s.flush([studio])
+            return StudioDTO(**studio.to_dict())

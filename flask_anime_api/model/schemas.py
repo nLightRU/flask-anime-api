@@ -23,4 +23,7 @@ class StudioDTO(BaseModel):
 
 
 class StudioCreateSchema(BaseModel):
-    ...
+    name: str
+    description: str | None = None
+    established: date | None = None
+    website: str | None = None

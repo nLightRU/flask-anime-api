@@ -1,5 +1,6 @@
 from flask import jsonify, request
 from flask.blueprints import Blueprint
+from pydantic import ValidationError
 
 from flask_anime_api.studio.repository import StudioRepository
 from flask_anime_api.model.schemas import StudioDTO, StudioCreateSchema
@@ -32,4 +33,14 @@ def get_all():
 
 @studio_bp.post('/')
 def post_studio():
-    ...
+    try: 
+        json = request.get_json()
+        studio_data = StudioCreateSchema(**json)
+    except ValidationError:
+        return 'Missing requred fields', 400
+        
+
+    repo = StudioRepository()
+    studio = repo.create(studio_data)
+
+    return jsonify(studio.model_dump())
