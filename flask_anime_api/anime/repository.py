@@ -31,12 +31,25 @@ class AnimeRepository:
             s.flush([a])
             return AnimeDTO(**a.to_dict())
     
-    def update(self, id_, data: AnimeCreateScheme) -> AnimeDTO:
+    def update(self, id_, data: AnimeDTO) -> AnimeDTO:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
             if not a:
                 raise ValueError('no such id')
-            a.title = data.title
-            a.episodes = data.episodes
+            update_values = {}
+            for k, v in data.model_dump().items():
+                if getattr(a, k) != v:
+                    update_values[k] = v
+            
+            if update_values == {}:
+                return AnimeDTO(**a.to_dict())
+
+            s.execute(
+                update(Anime)
+                .where(Anime.id == id_)
+                .values(**update_values)
+            )
+
             s.flush([a])
+            s.refresh(a)
             return AnimeDTO(**a.to_dict())

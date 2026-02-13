@@ -39,7 +39,7 @@ class StudioRepository:
             
             update_values = {}
             for k, v in studio_data.model_dump().items():
-                if hasattr(studio, k) and getattr(studio, k) != v:
+                if getattr(studio, k) != v:
                     update_values[k] = v
             
             if update_values == {}:

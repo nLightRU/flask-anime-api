@@ -48,7 +48,7 @@ def post_anime():
 def put_anime(anime_id):
     try:
         json = request.get_json()
-        new_data = AnimeCreateScheme(**json)
+        new_data = AnimeDTO(**json)
     except:
         return 'Missing requred fields', 400
     
