@@ -23,15 +23,14 @@ class Database:
         self.session_factory = sessionmaker(bind=self.engine)
         self.Session = scoped_session(self.session_factory)
 
-        # app.teardown_appcontext(self.close_session)
+        app.teardown_appcontext(self.close_session)
 
-    def close_session(self):
+    def close_session(self, exception=None):
         self.Session.remove()
 
     @contextmanager
     def session_scope(self):
         session = self.Session()
-
         try:
             yield session
             session.commit()
@@ -40,6 +39,5 @@ class Database:
             raise
         finally:
             session.close()
-
 
 db = Database()
