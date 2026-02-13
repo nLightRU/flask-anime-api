@@ -60,7 +60,7 @@ def put_studio(studio_id):
         studio = repo.update(studio_id, studio)
     except ValueError:
         return f'Studio with id {studio_id} not found', 404
-    # except:
-    #     return 'Internal server error', 500
+    except:
+        return 'Internal server error', 500
 
     return jsonify(studio.model_dump())
