@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from uuid import UUID, uuid4
 from sqlalchemy import Date
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,6 +14,8 @@ class Studio(Base):
     established: Mapped[date] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
     website: Mapped[str] = mapped_column(nullable=True)
+    is_deleted: Mapped[bool] = mapped_column(default=False)
+    deleted_at: Mapped[datetime] = mapped_column(nullable=True)
 
     def to_dict(self):
         return {

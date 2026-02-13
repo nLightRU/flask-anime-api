@@ -1,4 +1,6 @@
 from uuid import UUID
+from datetime import datetime, timezone
+
 from sqlalchemy import select, update
 
 from flask_anime_api.model.database import db
@@ -53,3 +55,13 @@ class StudioRepository:
             s.refresh(studio)
 
             return StudioDTO(**studio.to_dict())
+        
+    def delete(self, id_: UUID) -> None:
+        with self.database.session_scope() as s:
+            studio = s.get(Studio, id_)
+
+            if (studio is None) or (studio.is_deleted):
+                raise ValueError
+
+            studio.is_deleted = True
+            studio.deleted_at = datetime.now(timezone.utc)

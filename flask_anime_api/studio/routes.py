@@ -10,6 +10,7 @@ studio_bp = Blueprint('studios', __name__, url_prefix='/api/studios')
 @studio_bp.get('/<studio_id>')
 def get_by_id(studio_id):
     repo = StudioRepository()
+
     try:
         s = repo.get_by_id(studio_id)
     except ValueError:
@@ -39,7 +40,6 @@ def post_studio():
     except ValidationError:
         return 'Missing requred fields', 400
         
-
     repo = StudioRepository()
     studio = repo.create(studio_data)
 
@@ -53,9 +53,9 @@ def put_studio(studio_id):
         studio = StudioDTO(**json)
     except ValidationError:
         return 'Missing requred fields', 400
-        
 
     repo = StudioRepository()
+
     try:
         studio = repo.update(studio_id, studio)
     except ValueError:
@@ -64,3 +64,15 @@ def put_studio(studio_id):
         return 'Internal server error', 500
 
     return jsonify(studio.model_dump())
+
+
+@studio_bp.delete('/<studio_id>')
+def delete_studio(studio_id):
+    repo = StudioRepository()
+
+    try:
+        repo.delete(studio_id)
+    except ValueError:
+        return f'Studio with id {studio_id} not found', 404
+    
+    return jsonify({'status': 'No Content'}), 204
