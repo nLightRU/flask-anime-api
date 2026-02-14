@@ -2,11 +2,24 @@ from uuid import UUID
 from datetime import date
 from pydantic import BaseModel
 
+class StudioInList(BaseModel):
+    id: UUID
+    name: str
+
 
 class AnimeDTO(BaseModel):
     id: UUID
     title: str
     episodes: int
+    is_deleted: bool = False
+    studios_ids: list[UUID] | None = None
+
+
+class AnimeResponseScheme(BaseModel):
+    id: UUID
+    titile: str 
+    episodes: int | None  = None
+    studios: list[StudioInList] | None = None
 
 
 class AnimeCreateScheme(BaseModel):

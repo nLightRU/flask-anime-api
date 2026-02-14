@@ -26,5 +26,7 @@ class Anime(Base):
         return {
             'id': self.id,
             'title': self.title,
-            'episodes': self.episodes
+            'episodes': self.episodes,
+            'is_deleted': self.is_deleted,
+            'deleted_at': self.deleted_at
         }

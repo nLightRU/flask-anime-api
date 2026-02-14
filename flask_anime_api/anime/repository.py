@@ -11,14 +11,15 @@ class AnimeRepository:
     def __init__(self):
         self.database = db
 
-    def get_by_id(self, id_ : UUID | str):
+    def get_by_id(self, id_ : UUID | str) -> AnimeDTO:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
+            studios_id = [studio.id for studio in a.studios]
             
             if not a:
                 raise ValueError('no such id')
             
-            return AnimeDTO(**a.to_dict())
+            return AnimeDTO(**a.to_dict(), studios_ids=studios_id)
 
     def get_all(self) -> list[AnimeDTO]: 
         with self.database.session_scope() as s:
