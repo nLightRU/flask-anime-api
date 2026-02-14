@@ -17,7 +17,7 @@ class AnimeDTO(BaseModel):
 
 class AnimeResponseScheme(BaseModel):
     id: UUID
-    titile: str 
+    title: str 
     episodes: int | None  = None
     studios: list[StudioInList] | None = None
 

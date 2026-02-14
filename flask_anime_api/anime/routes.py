@@ -10,29 +10,39 @@ anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 @anime_bp.get('/<anime_id>')
 def get_anime_by_id(anime_id) -> AnimeResponseScheme:
     s = AnimeService()
-
+    
     try:
-        a = s.get_by_id(anime_id)
+        a = s.get_by_id(UUID(anime_id))
     except ValueError:
         return f'Anime with id {anime_id} not found', 404
 
     data = {
         'id': a.id,
-        'title': a.titile,
+        'title': a.title,
         'episodes': a.episodes,
         'studios': [{'id': s.id, 'name': s.name} for s in a.studios]
     }
-    
+
     return jsonify(data)
 
         
 @anime_bp.get('/')
-def get_anime():
-    offset = request.args.get('offset')
-    limit = request.args.get('limit')
-    repo = AnimeRepository()
-    anime = repo.get_all()
-    return jsonify([a.model_dump() for a in anime])
+def get_anime_all() -> list[AnimeResponseScheme]:
+    offset=request.args.get('offset')
+    limit=request.args.get('limit')
+    s = AnimeService()
+    anime = s.get_all()
+    
+    data = {
+        'meta (IN DEVELOPMENT)': {
+            'offset': offset,
+            'limit': limit, 
+            'count': 'IN DEVELOPMENT'
+        },
+        'data': [ a.model_dump() for a in anime ]
+    }
+
+    return jsonify(data)
 
 
 @anime_bp.post('/')

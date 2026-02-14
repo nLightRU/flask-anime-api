@@ -11,20 +11,25 @@ class AnimeRepository:
     def __init__(self):
         self.database = db
 
-    def get_by_id(self, id_ : UUID | str) -> AnimeDTO:
+    def get_by_id(self, id_ : UUID) -> AnimeDTO:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
-            studios_id = [studio.id for studio in a.studios]
-            
             if not a:
                 raise ValueError('no such id')
             
-            return AnimeDTO(**a.to_dict(), studios_ids=studios_id)
+            s_ids = [studio.id for studio in a.studios]
+            
+            return AnimeDTO(**a.to_dict(), studios_ids=s_ids)
 
-    def get_all(self) -> list[AnimeDTO]: 
+    def get_all(self) -> list[AnimeDTO]:
         with self.database.session_scope() as s:
             anime = s.scalars(select(Anime)).all()
-            return [AnimeDTO(**a.to_dict()) for a in anime]
+            data = []
+            for a in anime:
+                s_ids = [s.id for s in a.studios]
+                data.append(AnimeDTO(**a.to_dict(), studios_ids=s_ids))
+
+            return data
     
     def create(self, data: AnimeCreateScheme) -> AnimeDTO: 
         with self.database.session_scope() as s:
