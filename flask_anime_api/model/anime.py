@@ -1,9 +1,15 @@
 from datetime import datetime
 from uuid import UUID, uuid4
-from sqlalchemy import TIMESTAMP, func
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+
+from sqlalchemy import TIMESTAMP
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from flask_anime_api.model.base_model import Base
+from flask_anime_api.model.anime_studio import anime_studio_table
+
+if TYPE_CHECKING:
+    from .studio import Studio
 
 class Anime(Base):
     __tablename__ = 'anime'
@@ -12,7 +18,9 @@ class Anime(Base):
     title: Mapped[str] = mapped_column()
     episodes: Mapped[int] = mapped_column(nullable=True)
     is_deleted: Mapped[bool] = mapped_column(default=False)
-    deleted_at: Mapped[datetime] = mapped_column(nullable=False)
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP, nullable=False)
+
+    studios: Mapped[list["Studio"]] = relationship(secondary=anime_studio_table, back_populates='anime')
 
     def to_dict(self):
         return {
