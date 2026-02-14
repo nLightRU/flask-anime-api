@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, Table, Column
-from flask_anime_api.model.base_model import Base
+from flask_anime_api.model.base import Base
 
 anime_studio_table = Table(
     'anime_studios',

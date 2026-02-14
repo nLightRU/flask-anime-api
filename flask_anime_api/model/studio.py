@@ -6,7 +6,7 @@ from sqlalchemy import TIMESTAMP, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from flask_anime_api.model.anime import Anime
-from flask_anime_api.model.base_model import Base
+from flask_anime_api.model.base import Base
 from flask_anime_api.model.anime_studio import anime_studio_table
 
 if TYPE_CHECKING:

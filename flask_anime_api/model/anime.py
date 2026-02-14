@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from flask_anime_api.model.base_model import Base
+from flask_anime_api.model.base import Base
 from flask_anime_api.model.anime_studio import anime_studio_table
 
 if TYPE_CHECKING:
