@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, abort
 
 from flask_anime_api.anime.service import AnimeService
 from flask_anime_api.anime.repository import AnimeRepository
-from flask_anime_api.model.schemas import AnimeCreateScheme, AnimeDTO, AnimeResponseScheme
+from flask_anime_api.model.schemas import AnimeCreateUpdateScheme, AnimeDTO, AnimeResponseScheme
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 
@@ -49,7 +49,7 @@ def get_anime_all() -> list[AnimeResponseScheme]:
 def post_anime():
     try:
         json = request.get_json()
-        data = AnimeCreateScheme(**json)
+        data = AnimeCreateUpdateScheme(**json)
     except Exception:
         return 'Missing requred fields', 400    
 
@@ -67,7 +67,7 @@ def post_anime():
 def put_anime(anime_id):
     try:
         json = request.get_json()
-        new_data = AnimeDTO(**json)
+        new_data = AnimeCreateUpdateScheme(**json)
     except:
         return 'Missing requred fields', 400
     

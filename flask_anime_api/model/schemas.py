@@ -22,7 +22,7 @@ class AnimeResponseScheme(BaseModel):
     studios: list[StudioInList] | None = None
 
 
-class AnimeCreateScheme(BaseModel):
+class AnimeCreateUpdateScheme(BaseModel):
     title: str
     episodes: int
 

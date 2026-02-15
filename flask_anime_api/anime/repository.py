@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 
-from flask_anime_api.model.schemas import AnimeDTO, AnimeCreateScheme
+from flask_anime_api.model.schemas import AnimeDTO, AnimeCreateUpdateScheme
 from flask_anime_api.model.database import db
 from flask_anime_api.model.anime import Anime
 
@@ -31,7 +31,7 @@ class AnimeRepository:
 
             return data
     
-    def create(self, data: AnimeCreateScheme) -> AnimeDTO: 
+    def create(self, data: AnimeCreateUpdateScheme) -> AnimeDTO: 
         with self.database.session_scope() as s:
             a = Anime(**data.model_dump())
             s.add(a)
@@ -45,7 +45,7 @@ class AnimeRepository:
                 raise ValueError('no such id')
             update_values = {}
             for k, v in data.model_dump().items():
-                if getattr(a, k) != v:
+                if hasattr(a, k) and getattr(a, k) != v:
                     update_values[k] = v
             
             if update_values == {}:
