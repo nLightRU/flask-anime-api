@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 
-from flask_anime_api.model.schemas import AnimeDTO, AnimeCreateScheme
+from flask_anime_api.model.schemas import BaseAnime, AnimeDTO
 from flask_anime_api.model.database import db
 from flask_anime_api.model.anime import Anime
 
@@ -31,14 +31,14 @@ class AnimeRepository:
 
             return data
     
-    def create(self, data: AnimeCreateScheme) -> AnimeDTO: 
+    def create(self, data: BaseAnime) -> AnimeDTO: 
         with self.database.session_scope() as s:
             a = Anime(**data.model_dump())
             s.add(a)
             s.flush([a])
             return AnimeDTO(**a.to_dict())
     
-    def update(self, id_, data: AnimeDTO) -> AnimeDTO:
+    def update(self, id_, data: BaseAnime) -> AnimeDTO:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
             if not a:
