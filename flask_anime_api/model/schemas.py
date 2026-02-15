@@ -1,42 +1,40 @@
 from uuid import UUID
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel
 
-class StudioInList(BaseModel):
+
+class BaseEntityInList(BaseModel):
     id: UUID
     name: str
 
 
-class AnimeDTO(BaseModel):
-    id: UUID
+class BaseAnime(BaseModel):
     title: str
-    episodes: int
+    episodes: int | None = None
+
+
+class AnimeDTO(BaseAnime):
+    id: UUID
     is_deleted: bool = False
+    deleted_at: datetime | None
     studios_ids: list[UUID] | None = None
 
 
-class AnimeResponseScheme(BaseModel):
+class AnimeResponseScheme(BaseAnime):
     id: UUID
     title: str 
     episodes: int | None  = None
-    studios: list[StudioInList] | None = None
+    studios: list[BaseEntityInList] | None = None
 
 
-class AnimeCreateUpdateScheme(BaseModel):
-    title: str
-    episodes: int
+class BaseStudio(BaseModel):
+    name: str
+    description: str | None = None
+    established: date | None = None
+    website: str | None = None
 
 
-class StudioDTO(BaseModel):
+class StudioDTO(BaseStudio):
     id: UUID
-    name: str
-    description: str | None = None
-    established: date | None = None
-    website: str | None = None
-
-
-class StudioCreateSchema(BaseModel):
-    name: str
-    description: str | None = None
-    established: date | None = None
-    website: str | None = None
+    is_deleted: bool = False
+    deleted_at: datetime | None = None

@@ -31,5 +31,7 @@ class Studio(Base):
             'name': self.name,
             'established': self.established,
             'description': self.description,
-            'website': self.website
+            'website': self.website,
+            'is_deleted': self.is_deleted,
+            'deleted_at': self.deleted_at,
         }

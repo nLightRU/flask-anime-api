@@ -3,14 +3,13 @@ from flask.blueprints import Blueprint
 from pydantic import ValidationError
 
 from flask_anime_api.studio.repository import StudioRepository
-from flask_anime_api.model.schemas import StudioDTO, StudioCreateSchema
+from flask_anime_api.model.schemas import StudioDTO, BaseStudio
 
 studio_bp = Blueprint('studios', __name__, url_prefix='/api/studios')
 
 @studio_bp.get('/<studio_id>')
 def get_by_id(studio_id):
     repo = StudioRepository()
-
     try:
         s = repo.get_by_id(studio_id)
     except ValueError:
@@ -36,7 +35,7 @@ def get_all():
 def post_studio():
     try: 
         json = request.get_json()
-        studio_data = StudioCreateSchema(**json)
+        studio_data = BaseStudio(**json)
     except ValidationError:
         return 'Missing requred fields', 400
         

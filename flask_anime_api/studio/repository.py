@@ -5,7 +5,7 @@ from sqlalchemy import select, update
 
 from flask_anime_api.model.database import db
 from flask_anime_api.model.studio import Studio
-from flask_anime_api.model.schemas import StudioDTO, StudioCreateSchema
+from flask_anime_api.model.schemas import StudioDTO, BaseStudio
 
 class StudioRepository:
     def __init__(self):
@@ -26,7 +26,7 @@ class StudioRepository:
                 StudioDTO(**studio.to_dict()) for studio in studios
             ]
     
-    def create(self, studio_data: StudioCreateSchema) -> StudioDTO:
+    def create(self, studio_data: BaseStudio) -> StudioDTO:
         with self.database.session_scope() as s:
             studio = Studio(**studio_data.model_dump())
             s.add(studio)

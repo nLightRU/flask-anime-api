@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from flask_anime_api.model.schemas import AnimeDTO, AnimeResponseScheme, StudioDTO, StudioInList
+from flask_anime_api.model.schemas import AnimeDTO, AnimeResponseScheme, StudioDTO, BaseEntityInList
 from flask_anime_api.anime.repository import AnimeRepository
 from flask_anime_api.studio.repository import StudioRepository
 
@@ -10,11 +10,11 @@ class AnimeService:
         self.anime_repo = AnimeRepository()
         self.studios_repo = StudioRepository()
 
-    def __get_anime_studios(self, a: AnimeDTO, studios: StudioDTO) -> list[StudioInList]:
+    def __get_anime_studios(self, a: AnimeDTO, studios: StudioDTO) -> list[BaseEntityInList]:
         data = []
         for s in studios:
             if s.id in a.studios_ids:
-                data.append(StudioInList(id=s.id, name=s.name))
+                data.append(BaseEntityInList(id=s.id, name=s.name))
         return data
 
     def get_all(self) -> list[AnimeResponseScheme]:
