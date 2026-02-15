@@ -27,6 +27,10 @@ class AnimeResponseScheme(BaseAnime):
     studios: list[BaseEntityInList] | None = None
 
 
+class AnimeUpdateScheme(BaseAnime):
+    studios_ids: list[UUID]
+
+
 class BaseStudio(BaseModel):
     name: str
     description: str | None = None

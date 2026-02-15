@@ -1,11 +1,14 @@
+from typing import Sequence
 from uuid import UUID
 from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 
-from flask_anime_api.model.schemas import BaseAnime, AnimeDTO
+from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeDTO
 from flask_anime_api.model.database import db
 from flask_anime_api.model.anime import Anime
+from flask_anime_api.model.studio import Studio
+from flask_anime_api.model.anime_studio import anime_studio_table as AniStuT
 
 class AnimeRepository:
     def __init__(self):
@@ -38,28 +41,33 @@ class AnimeRepository:
             s.flush([a])
             return AnimeDTO(**a.to_dict())
     
-    def update(self, id_, data: BaseAnime) -> AnimeDTO:
-        with self.database.session_scope() as s:
-            a = s.get(Anime, id_)
+    def update(self, id_, data: AnimeUpdateScheme) -> AnimeDTO:
+        with self.database.session_scope() as sess:
+            a = sess.get(Anime, id_)
             if not a:
                 raise ValueError('no such id')
-            update_values = {}
-            for k, v in data.model_dump().items():
-                if hasattr(a, k) and getattr(a, k) != v:
-                    update_values[k] = v
             
-            if update_values == {}:
-                return AnimeDTO(**a.to_dict())
+            update_values = {}
+            for attr in BaseAnime.model_fields.keys():
+                if hasattr(data, attr) and getattr(a, attr) != getattr(data, attr):
+                    update_values[attr] = getattr(data, attr)
+                    
+            if update_values != {}:
+                sess.execute(
+                    update(Anime)
+                    .where(Anime.id == id_)
+                    .values(**update_values)
+                )
 
-            s.execute(
-                update(Anime)
-                .where(Anime.id == id_)
-                .values(**update_values)
-            )
+            stmt = select(Studio).where(Studio.id.in_(data.studios_ids))
+            new_studios = set(sess.scalars(stmt).all())
+            a.studios = new_studios
+            
+            sess.refresh(a)
+            
+            studios_ids = [s.id for s in a.studios]
 
-            s.flush([a])
-            s.refresh(a)
-            return AnimeDTO(**a.to_dict())
+            return AnimeDTO(**a.to_dict(), studios_ids=studios_ids)
         
     def delete(self, id_):
         with self.database.session_scope() as s:

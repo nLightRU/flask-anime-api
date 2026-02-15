@@ -20,7 +20,7 @@ class Anime(Base):
     is_deleted: Mapped[bool] = mapped_column(default=False)
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP, nullable=False)
 
-    studios: Mapped[list["Studio"]] = relationship(secondary=anime_studio_table, back_populates='anime')
+    studios: Mapped[set["Studio"]] = relationship(secondary=anime_studio_table, back_populates='anime')
 
     def to_dict(self):
         return {

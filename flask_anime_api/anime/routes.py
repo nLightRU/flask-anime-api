@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, abort
 
 from flask_anime_api.anime.service import AnimeService
 from flask_anime_api.anime.repository import AnimeRepository
-from flask_anime_api.model.schemas import BaseAnime, AnimeResponseScheme
+from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeResponseScheme
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 
@@ -67,17 +67,24 @@ def post_anime():
 def put_anime(anime_id):
     try:
         json = request.get_json()
-        new_data = BaseAnime(**json)
+        anime_data = AnimeUpdateScheme(**json)
     except:
         return 'Missing requred fields', 400
     
-    repo = AnimeRepository()
+    s = AnimeService()
     try:
-        a = repo.update(anime_id, new_data)
+        a = s.update_anime(anime_id, anime_data)
     except ValueError:
         return f'Anime with id {anime_id} not found', 404
     
-    return jsonify(**a.model_dump())
+    data = {
+        'id': a.id,
+        'title': a.title,
+        'episodes': a.episodes,
+        'studios': [{'id': s.id, 'name': s.name} for s in a.studios]
+    }
+    
+    return jsonify(data)
 
 
 @anime_bp.delete('/<anime_id>')

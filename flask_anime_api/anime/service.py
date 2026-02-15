@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from flask_anime_api.model.schemas import AnimeDTO, AnimeResponseScheme, StudioDTO, BaseEntityInList
+from flask_anime_api.model.schemas import AnimeDTO, AnimeResponseScheme, AnimeUpdateScheme, BaseAnime, StudioDTO, BaseEntityInList
 from flask_anime_api.anime.repository import AnimeRepository
 from flask_anime_api.studio.repository import StudioRepository
 
@@ -10,7 +10,7 @@ class AnimeService:
         self.anime_repo = AnimeRepository()
         self.studios_repo = StudioRepository()
 
-    def __get_anime_studios(self, a: AnimeDTO, studios: StudioDTO) -> list[BaseEntityInList]:
+    def __get_anime_studios(self, a: AnimeDTO, studios: list[StudioDTO]) -> list[BaseEntityInList]:
         data = []
         for s in studios:
             if s.id in a.studios_ids:
@@ -55,3 +55,14 @@ class AnimeService:
             studios=studios_resp
         )
     
+    def update_anime(self, anime_id: UUID, anime_data: AnimeUpdateScheme) -> AnimeResponseScheme:
+        studios = self.studios_repo.get_all()
+        
+        a = self.anime_repo.update(anime_id, anime_data)
+
+        return AnimeResponseScheme(
+            id=a.id,
+            title=a.title,
+            episodes=a.episodes,
+            studios=[s for s in self.__get_anime_studios(a, studios)]
+        )
