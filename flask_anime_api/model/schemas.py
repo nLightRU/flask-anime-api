@@ -1,6 +1,13 @@
 from uuid import UUID
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel
+
+class BaseStudio(BaseModel):
+    name: str
+    description: str | None = None
+    established: date | None = None
+    website: str | None = None
+
 
 class StudioInList(BaseModel):
     id: UUID
@@ -27,16 +34,7 @@ class AnimeCreateScheme(BaseModel):
     episodes: int
 
 
-class StudioDTO(BaseModel):
+class StudioDTO(BaseStudio):
     id: UUID
-    name: str
-    description: str | None = None
-    established: date | None = None
-    website: str | None = None
-
-
-class StudioCreateSchema(BaseModel):
-    name: str
-    description: str | None = None
-    established: date | None = None
-    website: str | None = None
+    is_deleted: bool = False
+    deleted_at: datetime | None = None
