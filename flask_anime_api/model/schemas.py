@@ -2,11 +2,9 @@ from uuid import UUID
 from datetime import date, datetime
 from pydantic import BaseModel
 
-
 class BaseEntityInList(BaseModel):
     id: UUID
     name: str
-
 
 class BaseAnime(BaseModel):
     title: str
