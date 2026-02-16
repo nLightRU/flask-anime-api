@@ -18,7 +18,7 @@ class AnimeRepository:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
             if not a:
-                raise ValueError('no such id')
+                return None
             
             s_ids = [studio.id for studio in a.studios]
             
@@ -73,9 +73,11 @@ class AnimeRepository:
         with self.database.session_scope() as s:
             a = s.get(Anime, id_)
             if not a:
-                raise ValueError
+                return False
             if a.is_deleted:
-                raise ValueError
+                return False
 
             a.is_deleted = True
             a.deleted_at = datetime.now(timezone.utc)
+
+            return True

@@ -33,14 +33,14 @@ class AnimeService:
 
         return data 
 
-    def get_by_id(self, id_: UUID) -> AnimeResponseScheme:
+    def get_by_id(self, id_: UUID) -> AnimeResponseScheme | None:
         """
-        Raises value error if no such id
+
         """
         a = self.anime_repo.get_by_id(id_)
         
         if (a is None) or a.is_deleted:
-            raise ValueError("no such id")
+            return None
         
         studios = self.studios_repo.get_all()
         studios_resp = []

@@ -1,5 +1,7 @@
 from uuid import UUID
+
 from flask import Blueprint, request, jsonify, abort
+from pydantic import ValidationError
 
 from flask_anime_api.anime.service import AnimeService
 from flask_anime_api.anime.repository import AnimeRepository
@@ -11,10 +13,10 @@ anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 def get_anime_by_id(anime_id) -> AnimeResponseScheme:
     s = AnimeService()
     
-    try:
-        a = s.get_by_id(UUID(anime_id))
-    except ValueError:
-        return f'Anime with id {anime_id} not found', 404
+    a = s.get_by_id(UUID(anime_id))
+
+    if not a:
+        return jsonify({'code':404, 'status': 'Not found', 'error': f'Anime with id {anime_id} not found'}), 404
 
     data = {
         'id': a.id,
@@ -50,8 +52,8 @@ def post_anime():
     try:
         json = request.get_json()
         data = BaseAnime(**json)
-    except Exception:
-        return 'Missing requred fields', 400    
+    except ValidationError as e:
+        return e.errors(), 400    
 
     repo = AnimeRepository()
     new_anime = repo.create(data)
@@ -68,14 +70,14 @@ def put_anime(anime_id):
     try:
         json = request.get_json()
         anime_data = AnimeUpdateScheme(**json)
-    except:
-        return 'Missing requred fields', 400
+    except ValidationError as e:
+        return e.errors(), 400
     
     s = AnimeService()
     try:
         a = s.update_anime(anime_id, anime_data)
     except ValueError:
-        return f'Anime with id {anime_id} not found', 404
+        return jsonify({'code':404, 'status': 'Not found', 'error': f'Anime with id {anime_id} not found'}), 404
     
     data = {
         'id': a.id,
@@ -90,9 +92,9 @@ def put_anime(anime_id):
 @anime_bp.delete('/<anime_id>')
 def delete_anime(anime_id):
     repo = AnimeRepository()
-    try:
-        repo.delete(anime_id)
-    except ValueError:
-        return f'Anime with id {anime_id} not found', 404
+    deleted = repo.delete(anime_id)
     
-    return jsonify({'status': 'No Content'}), 204
+    if not deleted:
+        return jsonify({'code':404, 'status': 'Not found', 'error': f'Anime with id {anime_id} not found'}), 404
+    
+    return jsonify({'code': 204, 'status': 'No Content'}), 204
