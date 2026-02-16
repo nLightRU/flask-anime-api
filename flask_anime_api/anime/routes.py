@@ -2,6 +2,7 @@ from uuid import UUID
 
 from flask import Blueprint, request, jsonify, abort
 from werkzeug.exceptions import BadRequest, NotFound
+from sqlalchemy.exc import NoResultFound
 from pydantic import ValidationError
 
 from flask_anime_api.anime.service import AnimeService
@@ -9,6 +10,7 @@ from flask_anime_api.anime.repository import AnimeRepository
 from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeResponseScheme
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
+
 
 @anime_bp.get('/<anime_id>')
 def get_anime_by_id(anime_id) -> AnimeResponseScheme:
@@ -74,13 +76,14 @@ def put_anime(anime_id):
         json = request.get_json()
         anime_data = AnimeUpdateScheme(**json)
     except ValidationError as e:
-        return e.errors(), 400
+        msg = e.errors()[0]['msg']
+        loc = list(e.errors()[0]['loc'])
+        raise BadRequest(f"{msg} {loc}") 
     
     s = AnimeService()
-    try:
-        a = s.update_anime(anime_id, anime_data)
-    except ValueError:
-        return jsonify({'code':404, 'status': 'Not found', 'error': f'Anime with id {anime_id} not found'}), 404
+    a = s.update_anime(anime_id, anime_data)
+    if not a:
+        raise NotFound(f'Anime with id {anime_id} not found')
     
     data = {
         'id': a.id,

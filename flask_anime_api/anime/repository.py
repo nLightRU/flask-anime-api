@@ -1,4 +1,3 @@
-from typing import Sequence
 from uuid import UUID
 from datetime import datetime, timezone
 
@@ -8,7 +7,6 @@ from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeDTO
 from flask_anime_api.model.database import db
 from flask_anime_api.model.anime import Anime
 from flask_anime_api.model.studio import Studio
-from flask_anime_api.model.anime_studio import anime_studio_table as AniStuT
 
 class AnimeRepository:
     def __init__(self):
@@ -45,7 +43,7 @@ class AnimeRepository:
         with self.database.session_scope() as sess:
             a = sess.get(Anime, id_)
             if not a:
-                raise ValueError('no such id')
+                return None
             
             update_values = {}
             for attr in BaseAnime.model_fields.keys():
