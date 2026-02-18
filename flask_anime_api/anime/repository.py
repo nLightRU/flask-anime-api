@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import select, update
 
-from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeDTO
+from flask_anime_api.model.schemas import BaseEntityInList, AnimeUpdateScheme, BaseAnime, AnimeDTO
 from flask_anime_api.model.database import db
 from flask_anime_api.model.anime import Anime
 from flask_anime_api.model.studio import Studio
@@ -18,17 +18,17 @@ class AnimeRepository:
             if not a:
                 return None
             
-            s_ids = [studio.id for studio in a.studios]
+            studios = [BaseEntityInList(id=s.id, name=s.name) for s in a.studios]
             
-            return AnimeDTO(**a.to_dict(), studios_ids=s_ids)
+            return AnimeDTO(**a.to_dict(), studios=studios)
 
     def get_all(self) -> list[AnimeDTO]:
         with self.database.session_scope() as s:
             anime = s.scalars(select(Anime)).all()
             data = []
             for a in anime:
-                s_ids = [s.id for s in a.studios]
-                data.append(AnimeDTO(**a.to_dict(), studios_ids=s_ids))
+                studios = [BaseEntityInList(id=s.id, name=s.name) for s in a.studios]
+                data.append(AnimeDTO(**a.to_dict(), studios=studios))
 
             return data
     

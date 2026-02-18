@@ -21,14 +21,7 @@ def get_anime_by_id(anime_id) -> AnimeResponseScheme:
     if not a:
         raise NotFound(f'Anime with id {anime_id} not found')
 
-    data = {
-        'id': a.id,
-        'title': a.title,
-        'episodes': a.episodes,
-        'studios': [{'id': s.id, 'name': s.name} for s in a.studios]
-    }
-
-    return jsonify(data)
+    return a.model_dump(mode='json')
 
         
 @anime_bp.get('/')
@@ -38,13 +31,14 @@ def get_anime_all() -> list[AnimeResponseScheme]:
     s = AnimeService()
     anime = s.get_all()
     
+    # Getting right order of fields
     data = {
         'meta (IN DEVELOPMENT)': {
             'offset': offset,
             'limit': limit, 
             'count': 'IN DEVELOPMENT'
         },
-        'data': [ a.model_dump() for a in anime ]
+        'data': [a.model_dump(mode='json') for a in anime]
     }
 
     return jsonify(data)
@@ -85,6 +79,7 @@ def put_anime(anime_id):
     if not a:
         raise NotFound(f'Anime with id {anime_id} not found')
     
+    # Getting right order of fields
     data = {
         'id': a.id,
         'title': a.title,

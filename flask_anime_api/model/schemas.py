@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import date, datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, model_serializer
 
 class BaseEntityInList(BaseModel):
     id: UUID
@@ -8,6 +8,7 @@ class BaseEntityInList(BaseModel):
 
 class BaseAnime(BaseModel):
     title: str
+    type_: str | None = None
     episodes: int | None = None
 
 
@@ -15,14 +16,22 @@ class AnimeDTO(BaseAnime):
     id: UUID
     is_deleted: bool = False
     deleted_at: datetime | None
-    studios_ids: list[UUID] | None = None
+    studios: list[BaseEntityInList] | None = None
 
 
 class AnimeResponseScheme(BaseAnime):
     id: UUID
-    title: str 
-    episodes: int | None  = None
     studios: list[BaseEntityInList] | None = None
+
+    @model_serializer
+    def fields_order(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'type': self.type_,
+            'episodes': self.episodes,
+            'studios': self.studios
+        }
 
 
 class AnimeUpdateScheme(BaseAnime):

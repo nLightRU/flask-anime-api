@@ -18,45 +18,29 @@ class AnimeService:
         return data
 
     def get_all(self) -> list[AnimeResponseScheme]:
-        anime = self.anime_repo.get_all()
-        studios = self.studios_repo.get_all()
-        
+        try:
+            anime = self.anime_repo.get_all()
+        except:
+            raise
+                
         data = []
         for a in anime:
-            anime_studios = self.__get_anime_studios(a, studios)
-            data.append(AnimeResponseScheme(
-                id=a.id,
-                title=a.title,
-                episodes=a.episodes,
-                studios=anime_studios
-            ))
+            data.append(AnimeResponseScheme(**a.model_dump()))
 
         return data 
 
     def get_by_id(self, id_: UUID) -> AnimeResponseScheme | None:
-        """
-
-        """
-        a = self.anime_repo.get_by_id(id_)
+        try:
+            a = self.anime_repo.get_by_id(id_)
+        except:
+            raise
         
         if (a is None) or a.is_deleted:
             return None
         
-        studios = self.studios_repo.get_all()
-        studios_resp = []
-        for s in studios:
-            if s.id in a.studios_ids:
-                studios_resp.append({'id': s.id, 'name': s.name})
-
-        return AnimeResponseScheme(
-            id=a.id,
-            title=a.title,
-            episodes=a.episodes,
-            studios=studios_resp
-        )
+        return AnimeResponseScheme(**a.model_dump())
     
     def update_anime(self, anime_id: UUID, anime_data: AnimeUpdateScheme) -> AnimeResponseScheme:
-        
         a = self.anime_repo.update(anime_id, anime_data)
         if not a:
             return None

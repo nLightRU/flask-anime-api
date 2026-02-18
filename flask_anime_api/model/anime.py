@@ -15,6 +15,7 @@ class Anime(Base):
     __tablename__ = 'anime'
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    type_: Mapped[str] = mapped_column('type', nullable=True)
     title: Mapped[str] = mapped_column()
     episodes: Mapped[int] = mapped_column(nullable=True)
     is_deleted: Mapped[bool] = mapped_column(default=False)
@@ -27,6 +28,7 @@ class Anime(Base):
             'id': self.id,
             'title': self.title,
             'episodes': self.episodes,
+            'type': self.type_,
             'is_deleted': self.is_deleted,
             'deleted_at': self.deleted_at
         }
