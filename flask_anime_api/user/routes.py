@@ -19,7 +19,13 @@ def get_user():
 
 @users_bp.get('/')
 def get_users():
-    ...
+    s = UserService()
+    try:
+        users = s.get_all()
+    except:
+        raise
+
+    return jsonify([u.model_dump() for u in users])
 
 @users_bp.post('')
 def create_user():

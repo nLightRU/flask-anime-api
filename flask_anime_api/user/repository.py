@@ -12,8 +12,11 @@ class UserRepository():
     def get_by_id(self):
         ...
 
-    def get_all(self):
-        ...
+    def get_all(self) -> list[UserDTO]:
+        with self.db.session_scope() as s:
+            users = s.scalars(select(User)).all()
+            data = [UserDTO(**u.to_dict()) for u in users]
+            return data
 
     def update(self):
         ...

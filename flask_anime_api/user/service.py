@@ -9,8 +9,14 @@ class UserService():
     def get_by_id(self):
         ...
 
-    def get_all(self):
-        ...
+    def get_all(self) -> list[UserDTO]:
+        try:
+            users = self.user_repo.get_all()
+        except:
+            raise
+
+        return users
+        
     
     def create(self, user_data: UserCreateSchema) -> UserDTO:
         try:
