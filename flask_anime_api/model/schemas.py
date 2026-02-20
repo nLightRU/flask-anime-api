@@ -49,3 +49,20 @@ class StudioDTO(BaseStudio):
     id: UUID
     is_deleted: bool = False
     deleted_at: datetime | None = None
+    anime: list[BaseEntityInList] | None = None
+
+
+class StudioResponseSchema(BaseStudio):
+    id: UUID
+    anime: list[BaseEntityInList] | None = None
+
+    @model_serializer
+    def fields_order(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'established': self.established,
+            'website': self.website,
+            'anime': self.anime
+        }

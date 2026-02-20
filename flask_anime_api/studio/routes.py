@@ -3,7 +3,7 @@ from flask.blueprints import Blueprint
 from pydantic import ValidationError
 
 from flask_anime_api.studio.service import StudioService
-from flask_anime_api.model.schemas import BaseStudio
+from flask_anime_api.model.schemas import BaseStudio, StudioResponseSchema
 
 studio_bp = Blueprint('studios', __name__, url_prefix='/api/studios')
 
@@ -11,14 +11,16 @@ studio_bp = Blueprint('studios', __name__, url_prefix='/api/studios')
 def get_by_id(studio_id):
     service = StudioService()
     try:
-        s = service.get_by_id(studio_id)
+        studio = service.get_by_id(studio_id)
     except ValueError:
         return f'No studio with id {studio_id}', 404
     
-    if not s:
+    if not studio:
         return f'No studio with id {studio_id}', 404
 
-    return jsonify(**s.model_dump())
+    studio_response = StudioResponseSchema(**studio.model_dump())
+
+    return jsonify(studio_response.model_dump())
 
 
 @studio_bp.get('/')
@@ -29,9 +31,9 @@ def get_all():
     except:
         return 'Internal server error', 500
     
-    return jsonify(
-        [studio.model_dump() for studio in studios]
-    )
+    resp_data = [StudioResponseSchema(**s.model_dump()) for s in studios]
+
+    return jsonify([studio.model_dump() for studio in resp_data])
 
 
 @studio_bp.post('/')

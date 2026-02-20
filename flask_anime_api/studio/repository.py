@@ -2,10 +2,11 @@ from uuid import UUID
 from datetime import datetime, timezone
 
 from sqlalchemy import select, update
+from sqlalchemy.orm import selectinload
 
 from flask_anime_api.model.database import db
 from flask_anime_api.model.studio import Studio
-from flask_anime_api.model.schemas import StudioDTO, BaseStudio
+from flask_anime_api.model.schemas import BaseEntityInList, BaseStudio, StudioDTO
 
 class StudioRepository:
     def __init__(self):
@@ -15,16 +16,20 @@ class StudioRepository:
         with db.session_scope() as s:
             studio = s.get(Studio, id_)
             if not studio:
-                raise ValueError('No such studio')
-
-            return StudioDTO(**studio.to_dict())
+                return None
+            anime = [BaseEntityInList(id=a.id, name=a.title) for a in studio.anime]
+            return StudioDTO(**studio.to_dict(), anime=anime)
             
     def get_all(self) -> list[StudioDTO]:
         with db.session_scope() as s:
-            studios = s.scalars(select(Studio)).all()
-            return [
-                StudioDTO(**studio.to_dict()) for studio in studios
-            ]
+            studios = s.scalars(select(Studio).options(selectinload(Studio.anime))).all()
+            data = []
+            for s in studios:
+                dto = StudioDTO(**s.to_dict())
+                anime = [BaseEntityInList(id=a.id, name=a.title) for a in s.anime]
+                dto.anime = anime
+                data.append(dto)
+            return data
     
     def create(self, studio_data: BaseStudio) -> StudioDTO:
         with self.database.session_scope() as s:
@@ -43,10 +48,10 @@ class StudioRepository:
             for k, v in studio_data.model_dump().items():
                 if getattr(studio, k) != v:
                     update_values[k] = v
-            
+                    
             if update_values == {}:
                 return StudioDTO(**studio.to_dict())
-
+            
             s.execute(update(Studio)
                       .where(Studio.id == id_)
                       .values(**update_values)
