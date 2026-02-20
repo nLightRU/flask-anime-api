@@ -2,27 +2,30 @@ from flask import jsonify, request
 from flask.blueprints import Blueprint
 from pydantic import ValidationError
 
-from flask_anime_api.studio.repository import StudioRepository
-from flask_anime_api.model.schemas import StudioDTO, BaseStudio
+from flask_anime_api.studio.service import StudioService
+from flask_anime_api.model.schemas import BaseStudio
 
 studio_bp = Blueprint('studios', __name__, url_prefix='/api/studios')
 
 @studio_bp.get('/<studio_id>')
 def get_by_id(studio_id):
-    repo = StudioRepository()
+    service = StudioService()
     try:
-        s = repo.get_by_id(studio_id)
+        s = service.get_by_id(studio_id)
     except ValueError:
         return f'No studio with id {studio_id}', 404
     
-    return jsonify(s.model_dump())
+    if not s:
+        return f'No studio with id {studio_id}', 404
+
+    return jsonify(**s.model_dump())
 
 
 @studio_bp.get('/')
 def get_all():
-    repo = StudioRepository()
+    service = StudioService()
     try:
-        studios = repo.get_all()
+        studios = service.get_all()
     except:
         return 'Internal server error', 500
     
@@ -39,8 +42,11 @@ def post_studio():
     except ValidationError:
         return 'Missing requred fields', 400
         
-    repo = StudioRepository()
-    studio = repo.create(studio_data)
+    service = StudioService()
+    try:
+        studio = service.create(studio_data)
+    except:
+        raise
 
     return jsonify(studio.model_dump())
 
@@ -49,28 +55,27 @@ def post_studio():
 def put_studio(studio_id):
     try:
         json = request.get_json()
-        studio = StudioDTO(**json)
+        studio = BaseStudio(**json)
     except ValidationError:
         return 'Missing requred fields', 400
 
-    repo = StudioRepository()
+    service = StudioService()
 
     try:
-        studio = repo.update(studio_id, studio)
+        studio = service.update(studio_id, studio)
     except ValueError:
         return f'Studio with id {studio_id} not found', 404
-    except:
-        return 'Internal server error', 500
+    
 
     return jsonify(studio.model_dump())
 
 
 @studio_bp.delete('/<studio_id>')
 def delete_studio(studio_id):
-    repo = StudioRepository()
+    service = StudioService()
 
     try:
-        repo.delete(studio_id)
+        service.delete(studio_id)
     except ValueError:
         return f'Studio with id {studio_id} not found', 404
     

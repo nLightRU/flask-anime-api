@@ -33,10 +33,10 @@ class StudioRepository:
             s.flush([studio])
             return StudioDTO(**studio.to_dict())
 
-    def update(self, id_: UUID, studio_data: StudioDTO) -> StudioDTO:
+    def update(self, id_: UUID, studio_data: BaseStudio) -> StudioDTO:
         with self.database.session_scope() as s:
             studio = s.get(Studio, id_)
-            if not studio:
+            if not studio or studio.is_deleted:
                 raise ValueError(f'No studio with id {id_}')
             
             update_values = {}
