@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import date, datetime
-from pydantic import BaseModel, model_serializer
+from pydantic import BaseModel, model_serializer, EmailStr
 
 class BaseEntityInList(BaseModel):
     id: UUID
@@ -66,3 +66,8 @@ class StudioResponseSchema(BaseStudio):
             'website': self.website,
             'anime': self.anime
         }
+
+
+class BaseUser(BaseModel):
+    username: str
+    email: EmailStr
