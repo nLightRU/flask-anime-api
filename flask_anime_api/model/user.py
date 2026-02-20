@@ -7,6 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_anime_api.model.base import Base
 
 class User(Base):
+    __tablename__ = 'users'
+    
     id_: Mapped[UUID] = mapped_column('id', primary_key=True, server_default=text('gen_random_uuid()'))
     username: Mapped[str] = mapped_column(nullable=False, unique=True)
     email: Mapped[str] = mapped_column(nullable=False, unique=True)

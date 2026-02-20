@@ -71,3 +71,13 @@ class StudioResponseSchema(BaseStudio):
 class BaseUser(BaseModel):
     username: str
     email: EmailStr
+
+class UserCreateSchema(BaseUser):
+    password: str
+    is_active: bool | None = True
+    is_admin: bool | None = False
+
+class UserDTO(BaseUser):
+    id: UUID
+    is_active: bool | None = True
+    is_admin: bool | None = False
