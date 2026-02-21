@@ -77,6 +77,8 @@ class UserDTO(BaseUser):
     id: UUID
     is_active: bool | None = True
     is_admin: bool | None = False
+    is_deleted: bool
+    deleted_at: datetime | None
 
 
 class UserCreateSchema(BaseUser):

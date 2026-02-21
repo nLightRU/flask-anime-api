@@ -15,8 +15,17 @@ def get_user_profile():
 
 
 @users_bp.get('/<user_id>')
-def get_user():
-    ...
+def get_user(user_id):
+    s = UserService()
+    try:
+        u = s.get_by_id(user_id=user_id)
+    except ValueError:
+        return f'No user with id {user_id}', 404
+    
+    if u:
+        return jsonify(u.model_dump())
+    
+    return f'No user with id {user_id}', 404
 
 
 @users_bp.get('/')
@@ -28,6 +37,7 @@ def get_users():
         raise
 
     return jsonify([u.model_dump() for u in users])
+
 
 @users_bp.post('')
 def create_user():

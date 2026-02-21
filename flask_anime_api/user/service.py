@@ -8,8 +8,16 @@ class UserService():
     def __init__(self):
         self.user_repo = UserRepository(db)
 
-    def get_by_id(self):
-        ...
+    def get_by_id(self, user_id: UUID) -> UserDTO:
+        try:
+            u = self.user_repo.get_by_id(user_id)
+        except:
+            raise
+
+        if u.is_deleted:
+            return None
+
+        return u
 
     def get_all(self) -> list[UserDTO]:
         try:

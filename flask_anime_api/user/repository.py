@@ -20,8 +20,13 @@ class UserRepository():
             return True
         return False
 
-    def get_by_id(self):
-        ...
+    def get_by_id(self, user_id) -> UserDTO:
+        with self.db.session_scope() as s: 
+            u = s.get(User, user_id)
+            if u:
+                data = UserDTO(**u.to_dict())
+                return data
+            raise ValueError('Not user with such id')
 
     def get_all(self) -> list[UserDTO]:
         with self.db.session_scope() as s:
@@ -43,8 +48,6 @@ class UserRepository():
             s.refresh(u)
             return UserDTO(**u.to_dict())
 
-
-
     def create(self, user_data: UserCreateSchema) -> UserDTO:
         with self.db.session_scope() as s:
             if self.__user_existed(s, email=user_data.email):
@@ -56,6 +59,5 @@ class UserRepository():
             s.flush()
             return UserDTO(**u.to_dict())
             
-
     def delete(self):
         ...
