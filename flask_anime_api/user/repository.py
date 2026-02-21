@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 
 from flask_anime_api.model.user import User
 from flask_anime_api.model.database import Database
-from flask_anime_api.model.schemas import BaseUser, UserDTO, UserCreateSchema, UserUpdateSchema
+
+from flask_anime_api.model.schemas import ( UserDTO,
+                                            UserCreateSchema, 
+                                            UserUpdateSchema, 
+                                            UserAuthSchema)
 
 class UserRepository():
     def __init__(self, db: Database):
@@ -69,3 +73,12 @@ class UserRepository():
                 raise ValueError('User already deleted')
             u.is_deleted = True
             u.deleted_at = datetime.now()
+
+    def authenticate(self, creds: UserAuthSchema) -> UserDTO:
+        with self.db.session_scope() as s:
+            u = s.scalars(select(User).filter_by(email=creds.email)).first()
+            if not u:
+                raise ValueError
+            if u.check_password(password=creds.password):
+                return UserDTO(**u.to_dict())
+            return None

@@ -92,3 +92,8 @@ class UserUpdateSchema(BaseUser):
     email: EmailStr
     is_active: bool
     is_admin: bool
+
+
+class UserAuthSchema(BaseModel):
+    email: EmailStr
+    password: str
