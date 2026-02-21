@@ -1,6 +1,8 @@
-from flask_anime_api.user.repository import UserRepository
+from uuid import UUID
+
 from flask_anime_api.model.database import db
-from flask_anime_api.model.schemas import UserDTO, UserCreateSchema
+from flask_anime_api.user.repository import UserRepository
+from flask_anime_api.model.schemas import UserDTO, UserCreateSchema, UserUpdateSchema
 
 class UserService():
     def __init__(self):
@@ -26,8 +28,12 @@ class UserService():
         
         return u
 
-    def update(self):
-        ...
+    def update(self, user_id: UUID, user_data: UserUpdateSchema) -> UserDTO:
+        try:
+            u = self.user_repo.update(user_id, user_data)
+        except:
+            raise
+        return u
 
     def delete(self):
         ...

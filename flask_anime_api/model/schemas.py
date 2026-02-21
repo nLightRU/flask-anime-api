@@ -72,12 +72,21 @@ class BaseUser(BaseModel):
     username: str
     email: EmailStr
 
-class UserCreateSchema(BaseUser):
-    password: str
-    is_active: bool | None = True
-    is_admin: bool | None = False
 
 class UserDTO(BaseUser):
     id: UUID
     is_active: bool | None = True
     is_admin: bool | None = False
+
+
+class UserCreateSchema(BaseUser):
+    password: str
+    is_active: bool | None = True
+    is_admin: bool | None = False
+
+
+class UserUpdateSchema(BaseUser):
+    username: str
+    email: EmailStr
+    is_active: bool
+    is_admin: bool

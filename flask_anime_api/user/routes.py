@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
 
 from flask_anime_api.user.service import UserService
-from flask_anime_api.model.schemas import UserCreateSchema
+from flask_anime_api.model.schemas import UserDTO, UserCreateSchema, UserUpdateSchema
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 
@@ -47,10 +47,22 @@ def create_user():
 
 
 @users_bp.put('/<user_id>/')
-def update_user():
-    ...
+def update_user(user_id):
+    try:
+        json = request.get_json()
+        user_data = UserUpdateSchema(**json)
+    except ValidationError:
+        return f'Validation error for user {user_id}', 400
+    
+    s = UserService()
+    try:
+        u = s.update(user_id=user_id, user_data=user_data)
+    except:
+        raise
+
+    return jsonify(**u.model_dump())
 
 
 @users_bp.delete('/<user_id>/')
-def delete_user():
+def delete_user(user_id):
     ...
