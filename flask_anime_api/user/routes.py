@@ -39,7 +39,7 @@ def get_users():
     return jsonify([u.model_dump() for u in users])
 
 
-@users_bp.post('')
+@users_bp.post('/')
 def create_user():
     try:
         data = request.get_json()
@@ -77,4 +77,10 @@ def update_user(user_id):
 
 @users_bp.delete('/<user_id>/')
 def delete_user(user_id):
-    ...
+    try:
+        s = UserService()
+        s.delete(user_id)
+    except ValueError:
+        return f'No user with id {user_id}', 404
+    
+    return 'Deleted', 204

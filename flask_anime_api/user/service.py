@@ -44,5 +44,8 @@ class UserService():
         
         return u
 
-    def delete(self):
-        ...
+    def delete(self, user_id: UUID):
+        try:
+            self.user_repo.delete(user_id)
+        except:
+            raise

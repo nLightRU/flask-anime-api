@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import select
@@ -59,5 +60,12 @@ class UserRepository():
             s.flush()
             return UserDTO(**u.to_dict())
             
-    def delete(self):
-        ...
+    def delete(self, user_id: UUID):
+        with self.db.session_scope() as s:
+            if not self.__user_existed(s, user_id=user_id):
+                raise ValueError('No user with such id')
+            u = s.get(User, user_id)
+            if u.is_deleted:
+                raise ValueError('User already deleted')
+            u.is_deleted = True
+            u.deleted_at = datetime.now()
