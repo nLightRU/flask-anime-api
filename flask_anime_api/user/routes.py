@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from flask import Blueprint, request, jsonify
 from pydantic import ValidationError
 
@@ -56,9 +58,9 @@ def update_user(user_id):
     
     s = UserService()
     try:
-        u = s.update(user_id=user_id, user_data=user_data)
-    except:
-        raise
+        u = s.update(user_id=UUID(user_id), user_data=user_data)
+    except ValueError:
+        return f'No user with id {user_id}', 404
 
     return jsonify(**u.model_dump())
 

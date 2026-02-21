@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from flask_anime_api.model.user import User
@@ -32,7 +32,7 @@ class UserRepository():
     def update(self, user_id: UUID, user_data: UserUpdateSchema) -> UserDTO:
         with self.db.session_scope() as s:
             if not self.__user_existed(s, user_id=user_id):
-                return ValueError('Not user with such id')
+                raise ValueError('Not user with such id')
             
             u = s.get(User, user_id)
             for k , v in user_data.model_dump().items():

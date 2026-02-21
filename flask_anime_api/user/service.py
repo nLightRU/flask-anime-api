@@ -33,6 +33,7 @@ class UserService():
             u = self.user_repo.update(user_id, user_data)
         except:
             raise
+        
         return u
 
     def delete(self):
