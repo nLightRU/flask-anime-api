@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import text
@@ -15,6 +16,8 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
+    is_deleted: Mapped[bool] = mapped_column(server_default='False')
+    deleted_at: Mapped[datetime] = mapped_column(nullable=True)
 
     def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)
@@ -28,5 +31,7 @@ class User(Base):
             'username': self.username,
             'email': self.email,
             'is_active': self.is_active,
-            'is_admin': self.is_admin
+            'is_admin': self.is_admin,
+            'is_deleted': self.is_deleted,
+            'deleted_at': self.deleted_at
         }
