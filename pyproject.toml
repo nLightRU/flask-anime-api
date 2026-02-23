@@ -18,6 +18,10 @@ alembic = "^1.18.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.2"
+pylint = "^4.0.5"
+
+[tool.pylint.main]
+init-hook = "import sys; sys.path.append('.')"
 
 [build-system]
 requires = ["poetry-core"]
