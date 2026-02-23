@@ -23,7 +23,8 @@ class Studio(Base):
     is_deleted: Mapped[bool] = mapped_column(default=False)
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP, nullable=True)
 
-    anime: Mapped[list["Anime"]] = relationship(secondary=anime_studio_table, back_populates='studios')
+    anime: Mapped[list["Anime"]] = relationship(secondary=anime_studio_table,
+                                                back_populates='studios')
 
     def to_dict(self):
         return {

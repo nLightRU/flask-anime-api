@@ -2,7 +2,6 @@ from uuid import UUID
 
 from flask import Blueprint, request, jsonify, abort
 from werkzeug.exceptions import BadRequest, NotFound
-from sqlalchemy.exc import NoResultFound
 from pydantic import ValidationError
 
 from flask_anime_api.anime.service import AnimeService
@@ -15,7 +14,6 @@ anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 @anime_bp.get('/<anime_id>')
 def get_anime_by_id(anime_id) -> AnimeResponseScheme:
     s = AnimeService()
-    
     a = s.get_by_id(UUID(anime_id))
 
     if not a:
@@ -23,14 +21,14 @@ def get_anime_by_id(anime_id) -> AnimeResponseScheme:
 
     return a.model_dump(mode='json')
 
-        
+
 @anime_bp.get('/')
 def get_anime_all() -> list[AnimeResponseScheme]:
     offset=request.args.get('offset')
     limit=request.args.get('limit')
     s = AnimeService()
     anime = s.get_all()
-    
+
     # Getting right order of fields
     data = {
         'meta (IN DEVELOPMENT)': {
@@ -52,14 +50,13 @@ def post_anime():
     except ValidationError as e:
         msg = e.errors()[0]['msg']
         loc = list(e.errors()[0]['loc'])
-        raise BadRequest(f"{msg} {loc}")    
+        return BadRequest(f"{msg} {loc}")
 
     repo = AnimeRepository()
     new_anime = repo.create(data)
 
     if not new_anime:
         abort(500)
-
 
     return jsonify(new_anime.model_dump())
 
@@ -72,13 +69,13 @@ def put_anime(anime_id):
     except ValidationError as e:
         msg = e.errors()[0]['msg']
         loc = list(e.errors()[0]['loc'])
-        raise BadRequest(f"{msg} {loc}") 
-    
+        return BadRequest(f"{msg} {loc}")
+
     s = AnimeService()
     a = s.update_anime(anime_id, anime_data)
     if not a:
-        raise NotFound(f'Anime with id {anime_id} not found')
-    
+        return NotFound(f'Anime with id {anime_id} not found')
+
     # Getting right order of fields
     data = {
         'id': a.id,
@@ -86,7 +83,7 @@ def put_anime(anime_id):
         'episodes': a.episodes,
         'studios': [{'id': s.id, 'name': s.name} for s in a.studios]
     }
-    
+
     return jsonify(data)
 
 
@@ -94,8 +91,8 @@ def put_anime(anime_id):
 def delete_anime(anime_id):
     repo = AnimeRepository()
     deleted = repo.delete(anime_id)
-    
+
     if not deleted:
-        raise NotFound(f'Anime with id {anime_id} not found')
-    
+        return NotFound(f'Anime with id {anime_id} not found')
+
     return jsonify({'code': 204, 'status': 'No Content'}), 204

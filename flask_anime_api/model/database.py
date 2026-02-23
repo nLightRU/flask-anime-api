@@ -7,7 +7,7 @@ class Database:
     def __init__(self):
         self.session_factory = None
         self.engine = None
-        self.Session = None
+        self.session_scoped = None
 
     def init_app(self, app: Flask):
         db_url = URL.create(
@@ -21,16 +21,16 @@ class Database:
 
         self.engine = create_engine(url=db_url)
         self.session_factory = sessionmaker(bind=self.engine)
-        self.Session = scoped_session(self.session_factory)
+        self.session_scoped = scoped_session(self.session_factory)
 
         app.teardown_appcontext(self.close_session)
 
     def close_session(self, exception=None):
-        self.Session.remove()
+        self.session_scoped.remove()
 
     @contextmanager
     def session_scope(self):
-        session = self.Session()
+        session = self.session_scoped()
         try:
             yield session
             session.commit()
