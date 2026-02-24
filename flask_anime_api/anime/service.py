@@ -1,9 +1,14 @@
 from uuid import UUID
 
-from flask_anime_api.model.schemas import AnimeDTO, AnimeResponseScheme, AnimeUpdateScheme, StudioDTO, BaseEntityInList
+from flask_anime_api.model.schemas import (
+    AnimeCreateScheme,
+    AnimeUpdateScheme,
+    AnimeResponseScheme
+)
 from flask_anime_api.anime.repository import AnimeRepository
 from flask_anime_api.studio.repository import StudioRepository
 
+#TODO return AnimeDTO from all AnimeService methods
 
 class AnimeService:
     def __init__(self):
@@ -30,6 +35,14 @@ class AnimeService:
 
         if (a is None) or a.is_deleted:
             return None
+
+        return AnimeResponseScheme(**a.model_dump())
+
+    def create_anime(self, data: AnimeCreateScheme) -> AnimeResponseScheme:
+        try:
+            a = self.anime_repo.create(data)
+        except:
+            raise
 
         return AnimeResponseScheme(**a.model_dump())
 

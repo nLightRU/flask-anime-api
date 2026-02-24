@@ -46,19 +46,19 @@ def get_anime_all() -> list[AnimeResponseScheme]:
 def post_anime():
     try:
         json = request.get_json()
-        data = BaseAnime(**json)
+        data = AnimeCreateScheme(**json)
     except ValidationError as e:
         msg = e.errors()[0]['msg']
         loc = list(e.errors()[0]['loc'])
         return BadRequest(f"{msg} {loc}")
 
-    repo = AnimeRepository()
-    new_anime = repo.create(data)
-
-    if not new_anime:
+    try:
+        s = AnimeService()
+        a = s.create_anime(data)
+    except:
         abort(500)
 
-    return jsonify(new_anime.model_dump())
+    return a.model_dump(mode='json')
 
 
 @anime_bp.put('/<anime_id>')

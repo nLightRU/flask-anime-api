@@ -18,6 +18,8 @@ class AnimeDTO(BaseAnime):
     deleted_at: datetime | None
     studios: list[BaseEntityInList] | None = None
 
+class AnimeCreateScheme(BaseAnime):
+    studios: list[UUID] | None = None
 
 class AnimeResponseScheme(BaseAnime):
     id: UUID
