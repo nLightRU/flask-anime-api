@@ -1,3 +1,12 @@
+"""
+Модуль содержит в себе функции обработчики роутов, связанных с Anime
+* GET /api/anime/
+* GET /api/anime/{id}
+* POST /api/anime/
+* PUT /api/anime/{id}
+* DELETE /api/anime/{id}
+"""
+
 from uuid import UUID
 
 from flask import Blueprint, request, jsonify, abort
@@ -6,13 +15,17 @@ from pydantic import ValidationError
 
 from flask_anime_api.anime.service import AnimeService
 from flask_anime_api.anime.repository import AnimeRepository
-from flask_anime_api.model.schemas import AnimeUpdateScheme, BaseAnime, AnimeResponseScheme
+from flask_anime_api.model.schemas import AnimeUpdateScheme, AnimeResponseScheme, AnimeCreateScheme
 
 anime_bp = Blueprint('anime', __name__, url_prefix='/api/anime')
 
 
 @anime_bp.get('/<anime_id>')
 def get_anime_by_id(anime_id) -> AnimeResponseScheme:
+    """
+    Функция обработчик метода GET /api/anime/{id}
+    Возвращает JSON объект сущности Anime
+    """
     s = AnimeService()
     a = s.get_by_id(UUID(anime_id))
 
@@ -24,6 +37,10 @@ def get_anime_by_id(anime_id) -> AnimeResponseScheme:
 
 @anime_bp.get('/')
 def get_anime_all() -> list[AnimeResponseScheme]:
+    """
+    Функция обработчик метода GET /api/anime/{id}
+    Возвращает JSON список сущностей Anime
+    """
     offset=request.args.get('offset')
     limit=request.args.get('limit')
     s = AnimeService()
@@ -44,6 +61,10 @@ def get_anime_all() -> list[AnimeResponseScheme]:
 
 @anime_bp.post('/')
 def post_anime():
+    """
+    Функция обработчик метода POST /api/anime
+    Возвращает JSON объект сущности Anime
+    """
     try:
         json = request.get_json()
         data = AnimeCreateScheme(**json)
@@ -63,6 +84,10 @@ def post_anime():
 
 @anime_bp.put('/<anime_id>')
 def put_anime(anime_id):
+    """
+    Функция обработчик метода PUT /api/anime/{id}
+    Возвращает JSON объект сущности Anime с изменёнными полями
+    """
     try:
         json = request.get_json()
         anime_data = AnimeUpdateScheme(**json)
@@ -81,6 +106,11 @@ def put_anime(anime_id):
 
 @anime_bp.delete('/<anime_id>')
 def delete_anime(anime_id):
+    """
+    Функция-обработчик роута DELETE /api/anime/{id}
+    Реализует мягкое удаление в таблице anime
+    В таблице anime_studios записи удаляются
+    """
     repo = AnimeRepository()
     deleted = repo.delete(anime_id)
 
