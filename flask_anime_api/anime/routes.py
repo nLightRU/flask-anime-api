@@ -76,15 +76,7 @@ def put_anime(anime_id):
     if not a:
         return NotFound(f'Anime with id {anime_id} not found')
 
-    # Getting right order of fields
-    data = {
-        'id': a.id,
-        'title': a.title,
-        'episodes': a.episodes,
-        'studios': [{'id': s.id, 'name': s.name} for s in a.studios]
-    }
-
-    return jsonify(data)
+    return a.model_dump(mode='json')
 
 
 @anime_bp.delete('/<anime_id>')
