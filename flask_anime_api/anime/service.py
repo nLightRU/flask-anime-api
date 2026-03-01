@@ -15,17 +15,17 @@ class AnimeService:
         self.anime_repo = AnimeRepository()
         self.studios_repo = StudioRepository()
 
-    def get_all(self) -> list[AnimeResponseScheme]:
+    def get_all(self, limit: int = 0, offset: int = 10) -> list[AnimeResponseScheme]:
         try:
-            anime = self.anime_repo.get_all()
+            anime, total = self.anime_repo.get_all(limit=limit, offset=offset)
         except:
             raise
 
-        data = []
+        anime_list = []
         for a in anime:
-            data.append(AnimeResponseScheme(**a.model_dump()))
+            anime_list.append(AnimeResponseScheme(**a.model_dump()))
 
-        return data 
+        return anime_list, total
 
     def get_by_id(self, id_: UUID) -> AnimeResponseScheme | None:
         try:

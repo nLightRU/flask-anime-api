@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import datetime, timezone
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 
 from flask_anime_api.model.schemas import ( 
     BaseEntityInList,
@@ -28,15 +28,24 @@ class AnimeRepository:
             
             return AnimeDTO(**a.to_dict(), studios=studios)
 
-    def get_all(self) -> list[AnimeDTO]:
+    def get_all(self, limit: int = 10, offset: int = 0) -> list[AnimeDTO]:
         with self.database.session_scope() as s:
-            anime = s.scalars(select(Anime)).all()
+            # total = s.execute(func.count(select(Anime.id))).scalar()
+            total = -10
+
+            query = select(Anime).order_by(Anime.id)
+            if limit:
+                query = query.limit(limit=limit)
+            if offset:
+                query = query.offset(offset=offset)
+
+            anime = s.scalars(query).all()
             data = []
             for a in anime:
                 studios = [BaseEntityInList(id=s.id, name=s.name) for s in a.studios]
                 data.append(AnimeDTO(**a.to_dict(), studios=studios))
 
-            return data
+            return data, total
     
     def create(self, data: AnimeCreateScheme) -> AnimeDTO: 
         with self.database.session_scope() as s:

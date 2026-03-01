@@ -41,17 +41,17 @@ def get_anime_all() -> list[AnimeResponseScheme]:
     Функция обработчик метода GET /api/anime/{id}
     Возвращает JSON список сущностей Anime
     """
-    offset=request.args.get('offset')
-    limit=request.args.get('limit')
+    offset=int(request.args.get('offset', '0'))
+    limit=int(request.args.get('limit', '10'))
     s = AnimeService()
-    anime = s.get_all()
+    anime, total = s.get_all(limit=limit, offset=offset)
 
     # Getting right order of fields
     data = {
         'meta (IN DEVELOPMENT)': {
             'offset': offset,
             'limit': limit, 
-            'count': 'IN DEVELOPMENT'
+            'total': total
         },
         'data': [a.model_dump(mode='json') for a in anime]
     }
