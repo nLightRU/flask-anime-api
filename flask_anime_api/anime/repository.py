@@ -28,10 +28,9 @@ class AnimeRepository:
             
             return AnimeDTO(**a.to_dict(), studios=studios)
 
-    def get_all(self, limit: int = 10, offset: int = 0) -> list[AnimeDTO]:
+    def get_all(self, limit: int = 10, offset: int = 0) -> tuple[list[AnimeDTO], int]:
         with self.database.session_scope() as s:
-            # total = s.execute(func.count(select(Anime.id))).scalar()
-            total = -10
+            total = s.scalar(select(func.count(Anime.id)))
 
             query = select(Anime).order_by(Anime.id)
             if limit:

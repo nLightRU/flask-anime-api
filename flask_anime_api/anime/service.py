@@ -15,7 +15,7 @@ class AnimeService:
         self.anime_repo = AnimeRepository()
         self.studios_repo = StudioRepository()
 
-    def get_all(self, limit: int = 0, offset: int = 10) -> list[AnimeResponseScheme]:
+    def get_all(self, limit: int = 0, offset: int = 10) -> tuple[list[AnimeResponseScheme], int]:
         try:
             anime, total = self.anime_repo.get_all(limit=limit, offset=offset)
         except:
